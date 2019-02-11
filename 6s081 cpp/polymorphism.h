@@ -21,7 +21,9 @@ class BaseClass {
     return "BaseClass virtualFavoriteString";
   }
   
-  ~BaseClass(){
+  /// Note i: Even just having a virtual destructor allows
+  ///         dynamic_cast to work
+  virtual ~BaseClass(){
     std::cout << "deleting BaseClass \n";
   }
 };
