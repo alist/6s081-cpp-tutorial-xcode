@@ -58,6 +58,14 @@ class ChildClass : public BaseClass {
     return "ChildClass virtualFavoriteString";
   }
   
+  /// Note 4: Yes, like this! But TBH, you might prefer to define the type if you're writting public interface code
+  auto returnAPointer() {
+    auto testeePtr = std::shared_ptr<LifetimeTestee>(new LifetimeTestee);
+    // Note 5: Make sure to look up ways of using weak_ptr if you need circular references in your code--
+    //         honestly, they will make your life better.
+    return testeePtr;
+  };
+  
   ~ChildClass(){
     std::cout << "deleting ChildClass and associatedData \n";
     // Note C: smart pointers automatcially freed with *destruction* of the object!
