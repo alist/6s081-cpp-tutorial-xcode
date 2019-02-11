@@ -7,9 +7,19 @@
 //
 
 #include <iostream>
+#include "polymorphism.h"
 
 int main(int argc, const char * argv[]) {
   // insert code here...
-  std::cout << "Hello, World!\n";
+  //std::cout << "Hello, World!\n";
+  
+  /// Not the c++ 11 way
+  BaseClass * object = new ChildClass();
+  std::cout << object->nonVirtualFavoriteString() << std::endl;
+  std::cout << object->virtualFavoriteString() << std::endl;
+  delete object;
+  
   return 0;
 }
+
+
