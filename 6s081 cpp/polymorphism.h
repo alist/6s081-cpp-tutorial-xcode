@@ -43,19 +43,13 @@ class ChildClass : public BaseClass {
   ///         i.e. std::unique_ptr<std::vector<int>> myData = associatedData; leaves
   ///         associatedData without any internal pointer.
   ///         unique only has move constructor-- red EffModC++ pp49-51 for constructor basics.
-  /// Note B: According to https://en.cppreference.com/w/cpp/language/default_initialization
-  ///         class types like (smart pointers) are default initialized,
-  ///         but that does not mean their internals are too!!
-  std::unique_ptr<std::vector<int>> associatedData;
+  std::unique_ptr<std::vector<int>> associatedData = std::unique_ptr<std::vector<int>>(new std::vector<int>{});
   /// Note 1: AND Behold shared_ptr, it supports the copy and move constructor.
   ///         it deletes the underlying object when no copies of the shared_ptr exist anymore
-  /// Note 2: If you run now, you'll see it is not "BORN".
-  std::shared_ptr<LifetimeTestee> testeePtr;
+  std::shared_ptr<LifetimeTestee> testeePtr = std::shared_ptr<LifetimeTestee>(new LifetimeTestee);
   
  public:
-  ChildClass() {
-    associatedData = std::unique_ptr<std::vector<int>>(new std::vector<int>{});
-  }
+  ChildClass() {}
   
   std::string nonVirtualFavoriteString() {
     return "ChildClass virtualFavoriteString";
@@ -67,14 +61,7 @@ class ChildClass : public BaseClass {
   
   ~ChildClass(){
     std::cout << "deleting ChildClass and associatedData \n";
-    // Note C: smart pointers automatcially freed with deletion of the object!
-    // Note D: Delete (for c++ objects) calls the ~Destructor before calling unix dealloc
-    //          with unix dealloc necessarily cleaning the memory,
-    //          do you need virtual destructor when you have smart pointers??
-    
-    //
-    // YES. Otherwise child objects don't get dumped.
-    // NOTE E: When rolling polymorphic, use virtual destructors.
+    // Note C: smart pointers automatcially freed with *destruction* of the object!
   }
 };
 
