@@ -39,14 +39,8 @@ class LifetimeTestee {
 class ChildClass : public BaseClass {
  /// reps should be private anyway..
  private:
-  /// Note A: Behold, unique_ptr, it only allows one (owner).
-  ///         i.e. std::unique_ptr<std::vector<int>> myData = associatedData; leaves
-  ///         associatedData without any internal pointer.
-  ///         unique only has move constructor-- red EffModC++ pp49-51 for constructor basics.
+  /// NOTE 1: Can't use auto easily for member variables, not even private ones, unfortunately
   std::unique_ptr<std::vector<int>> associatedData = std::unique_ptr<std::vector<int>>(new std::vector<int>{});
-  /// Note 1: AND Behold shared_ptr, it supports the copy and move constructor.
-  ///         it deletes the underlying object when no copies of the shared_ptr exist anymore
-  std::shared_ptr<LifetimeTestee> testeePtr = std::shared_ptr<LifetimeTestee>(new LifetimeTestee);
   
  public:
   ChildClass() {}
@@ -56,6 +50,11 @@ class ChildClass : public BaseClass {
   }
   
   std::string virtualFavoriteString() override {
+    // Note 2: Can use auto inside methods to make your life better...
+    auto testeePtr = std::shared_ptr<LifetimeTestee>(new LifetimeTestee); // unique_ptr is prolly faster, but don't sweat it
+    std::cout << "Printing something here just to really illustrate the smart ptr deletes AFTER the end of the function\n";
+    // Note 3: And yes, this didn't really need to be a pointer at all. Could have been a local. EXCEPT: We can return testeePtr and the underlying
+    //          object would still exist on the heap until the smart pointer is dropped.
     return "ChildClass virtualFavoriteString";
   }
   
