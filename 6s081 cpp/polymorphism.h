@@ -20,8 +20,20 @@ class BaseClass {
     return "BaseClass virtualFavoriteString";
   }
   
-  virtual ~BaseClass(){
+  // NOTE **: Removing virtuality for a sec
+  ~BaseClass(){
     std::cout << "deleting BaseClass \n";
+  }
+};
+
+class LifetimeTestee {
+ public:
+  LifetimeTestee() {
+    std::cout << "I AM BORN!! \n";
+  }
+  
+  ~LifetimeTestee() {
+    std::cout << "I'm BEING DELETED!! \n";
   }
 };
 
@@ -33,6 +45,7 @@ class ChildClass : public BaseClass {
   ///         class types like (smart pointers) are default initialized,
   ///         but that does not mean their internals are too!!
   std::unique_ptr<std::vector<int>> associatedData;
+  LifetimeTestee testee;
   
  public:
   ChildClass() {
@@ -54,6 +67,10 @@ class ChildClass : public BaseClass {
     // Note D: Delete (for c++ objects) calls the ~Destructor before calling unix dealloc
     //          with unix dealloc necessarily cleaning the memory,
     //          do you need virtual destructor when you have smart pointers??
+    
+    //
+    // YES. Otherwise child objects don't get dumped.
+    // NOTE E: When rolling polymorphic, use virtual destructors.
   }
 };
 
