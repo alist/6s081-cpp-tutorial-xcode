@@ -8,7 +8,6 @@
 
 #ifndef polymorphism_h
 #define polymorphism_h
-/// Note A: You often need to do imports like this
 #include <vector>
 
 class BaseClass {
@@ -21,22 +20,25 @@ class BaseClass {
     return "BaseClass virtualFavoriteString";
   }
   
-  /// Note i: Even just having a virtual destructor allows
-  ///         dynamic_cast to work
   virtual ~BaseClass(){
     std::cout << "deleting BaseClass \n";
   }
 };
 
-/// Note 1: ChildClass AFTER BaseClass
-///
-/// Note 2: Must put public before BaseClass here
 class ChildClass : public BaseClass {
+ /// reps should be private anyway..
+ private:
+  /// Note A: Behold, unique_ptr, it only allows one
+  /// Note B: According to https://en.cppreference.com/w/cpp/language/default_initialization
+  ///         class types like (smart pointers) are default initialized,
+  ///         but that does not mean their internals are too!!
+  std::unique_ptr<std::vector<int>> associatedData;
+  
  public:
-  std::vector<int>* associatedData;
   ChildClass() {
-    associatedData = new std::vector<int>{10};
-   }
+    //     associatedData->push_back(1); would fail until we do the next line...
+    associatedData = std::unique_ptr<std::vector<int>>(new std::vector<int>{});
+  }
   
   std::string nonVirtualFavoriteString() {
     return "ChildClass virtualFavoriteString";
@@ -48,11 +50,13 @@ class ChildClass : public BaseClass {
   
   ~ChildClass(){
     std::cout << "deleting ChildClass and associatedData \n";
-    // Note B:
-    // you wouldn't have to do this if associatedData were a smart pointer,
-    // or not a pointer
-    delete associatedData;
+    // Note C: smart pointers automatcially freed with deletion of the object!
+    // Note D: Delete (for c++ objects) calls the ~Destructor before calling unix dealloc
+    //          with unix dealloc necessarily cleaning the memory,
+    //          do you need virtual destructor when you have smart pointers??
   }
 };
 
 #endif /* polymorphism_h */
+
+
